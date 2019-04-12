@@ -1,0 +1,109 @@
+CASE 1：
+struct Link  
+{  
+    int data;  
+    Link *next;  
+};  
+
+// 插入节点  
+void insertNode(Link *&head, int data)  
+{  
+    Link *node = new Link;  
+    node->data = data;  
+    node->next = head;  
+    head = node;  
+}  
+
+// 判断链表是否存在环  
+Link* hasCycle(Link* head)  
+{  
+    Link *fast, *slow;  
+    slow = fast = head;  
+    while (fast && fast->next)  
+    {  
+        fast = fast->next->next;  
+        slow = slow->next;  
+        if (fast == slow)  
+            return slow;  
+    }  
+    return NULL;  
+}  
+
+// 确定环的入口点,pos表示fast与slow相遇的位置  
+Link* findCycleEntry(Link* head, Link* pos)  
+{  
+    while (head != pos)  
+    {  
+        head = head->next;  
+        pos = pos->next;  
+    }  
+    return head;  
+}  
+CASE 2：
+// 判断链表是否存在环
+Link* hasCycle(Link* head)
+{
+    Link *fast, *slow;
+    slow = fast = head;
+    while (fast && fast->next)
+    {
+        fast = fast->next->next;
+        slow = slow->next;
+        if (fast == slow)
+            return slow;
+    }
+    return NULL;
+}
+
+Link* findFirstCross(Link* head1, Link* head2)
+{
+    Link* pos1 = hasCycle(head1);  
+    Link* pos2 = hasCycle(head2); 
+
+    // 两个链表都有环
+    if (pos1 && pos2)
+    {
+        // 判断这两个环是不是同一个环
+        Link *tmp = pos1;
+        do
+        {
+            if (pos1 == pos2 ||pos1->next == pos2)
+                break;
+            pos1 = pos1->next->next;
+            tmp = tmp->next;
+        }while (pos1!=tmp);
+        // 两个链表的环不是同一个环,所以没有交点
+        if (pos1 != pos2 && pos1->next != pos2)
+            return NULL;
+        // 两个链表有共同的交点pos1,现在求第一个交点
+        int len1, len2;
+        len1 = len2 = 0;
+        Link *nd1, *nd2;
+        nd1 = head1;
+        while (nd1 != pos1) {len1++;nd1=nd1->next;}
+        nd2 = head2;
+        while (nd2 != pos1) {len2++;nd2=nd2->next;}
+        // 较长链表的链表的nd先走dif步
+        int dif;
+        nd1 = head1; nd2 = head2;
+        if (len1 >= len2)
+        {
+            dif = len1 - len2;
+            while (dif--) nd1 = nd1->next;
+        }
+        else
+        {
+            dif = len2 - len1;
+            while (dif--) nd2 = nd2->next;
+        }
+        // 之后两个nd再一起走,直到nd相等(即为第一个交点)
+        while (nd1!=pos1 && nd2!=pos1)
+        {
+            if (nd1 == nd2)
+                return nd1;
+            nd1 = nd1->next;
+            nd2 = nd2->next;
+        }
+        return pos1;
+    }
+}
